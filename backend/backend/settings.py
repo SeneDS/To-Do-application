@@ -63,7 +63,16 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_LIFETIME': timedelta(days=30),
     'SLIDING_TOKEN_REFRESH_LIFETIME_LATE_USER': timedelta(days=1),
     'SLIDING_TOKEN_LIFETIME_LATE_USER': timedelta(days=30),
+    "AUTH_HEADER_TYPES": ("Bearer",) # ← correspond à mon front
 }
+
+
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3001",
+    "http://127.0.0.1:3001",
+]
+
 ###################################
 
 
@@ -95,11 +104,49 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'backend.wsgi.application'
+
+SWAGGER_SETTINGS = {
+    "USE_SESSION_AUTH": False,   # masque "Django Login"
+    "SECURITY_DEFINITIONS": {
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header",
+            # tu mettras:  Authorization: Bearer <ACCESS_TOKEN>
+        }
+    },
+}
+
 
 
 # Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+from os import getenv
+from dotenv import load_dotenv
+load_dotenv()
+
+
+
+from django.db.backends.postgresql.psycopg_any import IsolationLevel
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "todo_db",
+        "USER": "etienne",
+        "PASSWORD": "Senfidel1107@.",
+        "HOST": "localhost",
+        "PORT": "5432",
+    },
+    "OPTIONS": {
+        "isolation_level": IsolationLevel.SERIALIZABLE,
+    },
+}
+
+
+
+AUTH_USER_MODEL = 'auth.User'
+
+WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASES = {
     'default': {
@@ -107,6 +154,8 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+
 
 
 # Password validation

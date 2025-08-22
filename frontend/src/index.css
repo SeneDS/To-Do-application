@@ -1,13 +1,83 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* ========== Variables de thème ========== */
+:root{
+  --brand-1:#4f46e5;      /* Indigo */
+  --brand-2:#06b6d4;      /* Cyan   */
+  --bg-grad-1:#f8fafc;    /* Top bg */
+  --bg-grad-2:#eef2f7;    /* Bottom */
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+/* ========== Fond app ========== */
+.app-bg{
+  background:
+    radial-gradient(1200px 600px at 10% 10%, #e8f0ff 0%, transparent 60%),
+    radial-gradient(1200px 600px at 90% 20%, #ffeef3 0%, transparent 60%),
+    linear-gradient(180deg, var(--bg-grad-1) 0%, var(--bg-grad-2) 100%);
+}
+
+/* ========== Texte en dégradé (unique) ========== */
+.gradient-text{
+  background: linear-gradient(90deg, #0ea5e9, var(--brand-1));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+
+/* ========== Surfaces “verre” (modal/cartes) ========== */
+.modal-glass, .login-card, .glass-card{
+  background: rgba(255,255,255,.9);
+  border: 1px solid rgba(255,255,255,.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px); /* Safari */
+  border-radius: 1rem;
+}
+
+/* ========== Animation d’apparition ========== */
+@keyframes popIn{
+  from{ transform: translateY(8px) scale(.98); opacity:0; }
+  to  { transform: translateY(0)   scale(1);   opacity:1; }
+}
+.modal-anim{ animation: popIn .18s ease-out; }
+
+/* ========== Boutons ========== */
+.btn-gradient{
+  --c1: var(--brand-1);
+  --c2: var(--brand-2);
+  background-image: linear-gradient(90deg, var(--c1), var(--c2));
+  color:#fff; border:0;
+  box-shadow: 0 10px 28px rgba(6,182,212,.25);
+}
+.btn-gradient:hover{ filter:brightness(.95); }
+
+.btn-ghost{
+  background: transparent;
+  border: 1px solid rgba(15,23,42,.12);
+}
+.btn-ghost:hover{ background: rgba(15,23,42,.04); }
+
+/* ========== Form & utilitaires ========== */
+.bg-light-subtle{ background-color:#f3f6fb !important; }
+.completed-todo{ text-decoration: line-through; opacity:.6; }
+.item-hover{ transition: transform .12s ease, box-shadow .12s ease; }
+.item-hover:hover{ transform: translateY(-1px); box-shadow:0 8px 24px rgba(16,24,40,.08); }
+.auth-card, .login-card{ max-width: 720px; width:100%; }
+
+/* ========== Header ========== */
+.site-header{ padding:18px 0; }
+.brand-dot{
+  width:12px; height:12px; border-radius:50%;
+  background: linear-gradient(90deg, var(--brand-1), var(--brand-2));
+  box-shadow: 0 0 0 4px rgba(79,70,229,.15);
+}
+
+/* ========== Hero ========== */
+.hero{ min-height:58vh; position:relative; }
+.shadow-xl{ box-shadow: 0 24px 60px rgba(16,24,40,.12) !important; }
+
+/* ========== Alert ========== */
+.alert-toast {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 1080;
+  min-width: 260px;
 }

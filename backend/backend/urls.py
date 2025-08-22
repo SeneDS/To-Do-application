@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
 from todo import views
+from todo.views import RegisterView
 
 
 from rest_framework import permissions
@@ -43,10 +44,11 @@ schema_view = get_schema_view(
 )
 
 router = routers.DefaultRouter()
-router.register(r'todos', views.TodoView, 'todo')
+router.register(r'todos', views.TodoViewSet, 'todo')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path("api/register/", RegisterView.as_view(), name="register"),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),#JWT
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'), #JWT
     path('api/', include(router.urls)),

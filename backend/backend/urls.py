@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
 from todo import views
-from todo.views import RegisterView
+from todo.views import RegisterView, UserViewSet
 
 
 from rest_framework import permissions
@@ -45,6 +45,7 @@ schema_view = get_schema_view(
 
 router = routers.DefaultRouter()
 router.register(r'todos', views.TodoViewSet, 'todo')
+router.register(r'users', UserViewSet, 'user')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

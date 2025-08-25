@@ -4,5 +4,4 @@ import App from "./App";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.css";
 
-const root = createRoot(document.getElementById("root"));
-root.render(<App />);
+createRoot(document.getElementById("root") as HTMLElement).render(<App />);

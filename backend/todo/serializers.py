@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Todo
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 
 class TodoSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source="owner.username")  # ← pas besoin de l’envoyer du front
@@ -15,6 +15,18 @@ class TodoSerializer(serializers.ModelSerializer):
             )
         return attrs
     
+
+
+class UserSerializer(serializers.ModelSerializer):
+    groups = serializers.SlugRelatedField(
+        many=True, slug_field='name', queryset=Group.objects.all()
+    )
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'groups']
+
+
 
 class RegisterSerializer(serializers.ModelSerializer):
         email = serializers.EmailField(required=True)

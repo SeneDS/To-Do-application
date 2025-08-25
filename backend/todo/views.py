@@ -1,7 +1,10 @@
 from rest_framework import viewsets, permissions, generics, status, response
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from .models import Todo
-from .serializers import TodoSerializer, RegisterSerializer
+from .serializers import TodoSerializer, RegisterSerializer, UserSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth.models import User, Group
+
 
 class TodoViewSet(viewsets.ModelViewSet):
     authentication_classes = [JWTAuthentication]
@@ -23,6 +26,16 @@ class TodoViewSet(viewsets.ModelViewSet):
     # ← attache automatiquement le owner à la création
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+
+
+
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAdminUser]  # ← accès réservé aux admins
 
 
 class RegisterView(generics.CreateAPIView):

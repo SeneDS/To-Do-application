@@ -1,0 +1,673 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.3.2 (Python 3.13.6 on darwin)" generated="2025-09-15T11:18:59.614035" rpa="false" schemaversion="5">
+<suite id="s1" name="Todos" source="/Users/etiennesene/Documents/To-Do-application/backend/testsRobot/todos.robot">
+<kw name="Create API Session" type="SETUP">
+<kw name="Create Session" owner="RequestsLibrary">
+<msg time="2025-09-15T11:18:59.755975" level="INFO">Creating Session using : alias=api, url=http://localhost:8000/api, headers={},                     cookies={}, auth=None, timeout=None, proxies=None, verify=False,                     debug=0 </msg>
+<arg>api</arg>
+<arg>${BASE_URL}</arg>
+<doc>Create Session: create a HTTP session to a server</doc>
+<status status="PASS" start="2025-09-15T11:18:59.755850" elapsed="0.000270"/>
+</kw>
+<doc>Crée une session HTTP nommée "api" vers http://localhost:8000/api.</doc>
+<status status="PASS" start="2025-09-15T11:18:59.755460" elapsed="0.000722"/>
+</kw>
+<test id="s1-t1" name="Auth Smoke For Todos" line="128">
+<kw name="Login And Get Tokens">
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2025-09-15T11:18:59.757696" level="INFO">&amp;{payload} = { username=etienne | password=etienne }</msg>
+<var>&amp;{payload}</var>
+<arg>username=${USERNAME}</arg>
+<arg>password=${PASSWORD}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2025-09-15T11:18:59.757458" elapsed="0.000259"/>
+</kw>
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2025-09-15T11:18:59.757896" level="INFO">&amp;{hdr} = { Content-Type=application/json }</msg>
+<var>&amp;{hdr}</var>
+<arg>Content-Type=application/json</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2025-09-15T11:18:59.757790" elapsed="0.000121"/>
+</kw>
+<kw name="POST On Session" owner="RequestsLibrary">
+<msg time="2025-09-15T11:18:59.886134" level="INFO">POST Request : url=http://localhost:8000/api/token/ 
+ path_url=/api/token/ 
+ headers={'User-Agent': 'python-requests/2.32.4', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Content-Type': 'application/json', 'Content-Length': '46'} 
+ body=b'{"username": "etienne", "password": "etienne"}' 
+ </msg>
+<msg time="2025-09-15T11:18:59.886244" level="INFO">POST Response : url=http://localhost:8000/api/token/ 
+ status=200, reason=OK 
+ headers={'Date': 'Mon, 15 Sep 2025 09:18:59 GMT', 'Server': 'WSGIServer/0.2 CPython/3.13.6', 'Content-Type': 'application/json', 'Vary': 'Accept, origin', 'Allow': 'POST, OPTIONS', 'X-Frame-Options': 'DENY', 'Content-Length': '489', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'same-origin', 'Cross-Origin-Opener-Policy': 'same-origin'} 
+ body={"refresh":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc1ODAxNDMzOSwiaWF0IjoxNzU3OTI3OTM5LCJqdGkiOiI5ZmYxNTUxOTg4MDc0ZGRiYWM2YzQzMWIxZGY3OWM4YSIsInVzZXJfaWQiOiIxIn0.-pZZj1D3Yjv8fNR3cFQ1NM3GSLGWXL_MHmLxFtjbTng","access":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzU3OTMxNTM5LCJpYXQiOjE3NTc5Mjc5MzksImp0aSI6IjJkYzYzNmZiMzU0MzRhMTI5YjhhNDFmOGEwNWE3NGJhIiwidXNlcl9pZCI6IjEifQ.0npXQ_933ylxq0XWnwjXhtqdQOQS7XC8cSvBOqQ-E3I"} 
+ </msg>
+<msg time="2025-09-15T11:18:59.886372" level="INFO">${resp} = &lt;Response [200]&gt;</msg>
+<var>${resp}</var>
+<arg>api</arg>
+<arg>${AUTH_PATH}</arg>
+<arg>json=${payload}</arg>
+<arg>headers=${hdr}</arg>
+<doc>Sends a POST request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2025-09-15T11:18:59.757967" elapsed="0.128431"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<msg time="2025-09-15T11:18:59.886976" level="INFO">Argument types are:
+&lt;class 'int'&gt;
+&lt;class 'str'&gt;</msg>
+<arg>${resp.status_code}</arg>
+<arg>200</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="PASS" start="2025-09-15T11:18:59.886577" elapsed="0.000443"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2025-09-15T11:18:59.887403" level="INFO">${data} = {'refresh': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc1ODAxNDMzOSwiaWF0IjoxNzU3OTI3OTM5LCJqdGkiOiI5ZmYxNTUxOTg4MDc0ZGRiYWM2YzQzMWIxZGY3OWM4YSIsInVzZXJfaWQiOiIxIn...</msg>
+<var>${data}</var>
+<arg>${resp.json()}</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2025-09-15T11:18:59.887092" elapsed="0.000328"/>
+</kw>
+<kw name="Dictionary Should Contain Key" owner="Collections">
+<arg>${data}</arg>
+<arg>access</arg>
+<doc>Fails if ``key`` is not found from ``dictionary``.</doc>
+<status status="PASS" start="2025-09-15T11:18:59.887482" elapsed="0.000100"/>
+</kw>
+<kw name="Dictionary Should Contain Key" owner="Collections">
+<arg>${data}</arg>
+<arg>refresh</arg>
+<doc>Fails if ``key`` is not found from ``dictionary``.</doc>
+<status status="PASS" start="2025-09-15T11:18:59.887636" elapsed="0.000073"/>
+</kw>
+<return>
+<value>${data['access']}</value>
+<value>${data['refresh']}</value>
+<status status="PASS" start="2025-09-15T11:18:59.887745" elapsed="0.000040"/>
+</return>
+<msg time="2025-09-15T11:18:59.888221" level="INFO">${ACCESS} = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzU3OTMxNTM5LCJpYXQiOjE3NTc5Mjc5MzksImp0aSI6IjJkYzYzNmZiMzU0MzRhMTI5YjhhNDFmOGEwNWE3NGJhIiwidXNlcl9pZCI6IjEifQ.0npXQ_933ylx...</msg>
+<msg time="2025-09-15T11:18:59.888246" level="INFO">${REFRESH} = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc1ODAxNDMzOSwiaWF0IjoxNzU3OTI3OTM5LCJqdGkiOiI5ZmYxNTUxOTg4MDc0ZGRiYWM2YzQzMWIxZGY3OWM4YSIsInVzZXJfaWQiOiIxIn0.-pZZj1D3Yjv...</msg>
+<var>${ACCESS}</var>
+<var>${REFRESH}</var>
+<doc>POST /api/token/ avec etienne/etienne. Retourne ${ACCESS} et ${REFRESH}.</doc>
+<status status="PASS" start="2025-09-15T11:18:59.757296" elapsed="0.130964"/>
+</kw>
+<kw name="Should Not Be Empty" owner="BuiltIn">
+<msg time="2025-09-15T11:18:59.888425" level="INFO">Length is 231.</msg>
+<arg>${ACCESS}</arg>
+<doc>Verifies that the given item is not empty.</doc>
+<status status="PASS" start="2025-09-15T11:18:59.888359" elapsed="0.000089"/>
+</kw>
+<kw name="Should Not Be Empty" owner="BuiltIn">
+<msg time="2025-09-15T11:18:59.888579" level="INFO">Length is 232.</msg>
+<arg>${REFRESH}</arg>
+<doc>Verifies that the given item is not empty.</doc>
+<status status="PASS" start="2025-09-15T11:18:59.888516" elapsed="0.000087"/>
+</kw>
+<doc>Vérifie qu'on obtient bien un access/refresh pour pouvoir tester /todos/.</doc>
+<status status="PASS" start="2025-09-15T11:18:59.756229" elapsed="0.132461"/>
+</test>
+<test id="s1-t2" name="CRUD Todo End-To-End" line="137">
+<kw name="Login And Get Tokens">
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2025-09-15T11:18:59.890154" level="INFO">&amp;{payload} = { username=etienne | password=etienne }</msg>
+<var>&amp;{payload}</var>
+<arg>username=${USERNAME}</arg>
+<arg>password=${PASSWORD}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2025-09-15T11:18:59.889990" elapsed="0.000180"/>
+</kw>
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2025-09-15T11:18:59.890318" level="INFO">&amp;{hdr} = { Content-Type=application/json }</msg>
+<var>&amp;{hdr}</var>
+<arg>Content-Type=application/json</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2025-09-15T11:18:59.890230" elapsed="0.000102"/>
+</kw>
+<kw name="POST On Session" owner="RequestsLibrary">
+<msg time="2025-09-15T11:18:59.997760" level="INFO">POST Request : url=http://localhost:8000/api/token/ 
+ path_url=/api/token/ 
+ headers={'User-Agent': 'python-requests/2.32.4', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Content-Type': 'application/json', 'Content-Length': '46'} 
+ body=b'{"username": "etienne", "password": "etienne"}' 
+ </msg>
+<msg time="2025-09-15T11:18:59.997827" level="INFO">POST Response : url=http://localhost:8000/api/token/ 
+ status=200, reason=OK 
+ headers={'Date': 'Mon, 15 Sep 2025 09:18:59 GMT', 'Server': 'WSGIServer/0.2 CPython/3.13.6', 'Content-Type': 'application/json', 'Vary': 'Accept, origin', 'Allow': 'POST, OPTIONS', 'X-Frame-Options': 'DENY', 'Content-Length': '489', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'same-origin', 'Cross-Origin-Opener-Policy': 'same-origin'} 
+ body={"refresh":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc1ODAxNDMzOSwiaWF0IjoxNzU3OTI3OTM5LCJqdGkiOiI4ZDQ3ZGY2MGI3ZTc0OTVlYThmYjMzYmY2MjM1Nzg1YyIsInVzZXJfaWQiOiIxIn0.-iPOW7J_fX_g_V1RFON1BCM23hsptq6llWr5X0g3jKU","access":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzU3OTMxNTM5LCJpYXQiOjE3NTc5Mjc5MzksImp0aSI6IjAyMWY3MGMwMDg4MjQ5NjQ5NmVjZWI5N2VkYTBhZGYxIiwidXNlcl9pZCI6IjEifQ.fSLd6WtkDVNwSIsPs1JRiVupW7RH6bWf8w72931ZpN4"} 
+ </msg>
+<msg time="2025-09-15T11:18:59.998058" level="INFO">${resp} = &lt;Response [200]&gt;</msg>
+<var>${resp}</var>
+<arg>api</arg>
+<arg>${AUTH_PATH}</arg>
+<arg>json=${payload}</arg>
+<arg>headers=${hdr}</arg>
+<doc>Sends a POST request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2025-09-15T11:18:59.890385" elapsed="0.107692"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<msg time="2025-09-15T11:18:59.998572" level="INFO">Argument types are:
+&lt;class 'int'&gt;
+&lt;class 'str'&gt;</msg>
+<arg>${resp.status_code}</arg>
+<arg>200</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="PASS" start="2025-09-15T11:18:59.998183" elapsed="0.000438"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2025-09-15T11:18:59.999050" level="INFO">${data} = {'refresh': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc1ODAxNDMzOSwiaWF0IjoxNzU3OTI3OTM5LCJqdGkiOiI4ZDQ3ZGY2MGI3ZTc0OTVlYThmYjMzYmY2MjM1Nzg1YyIsInVzZXJfaWQiOiIxIn...</msg>
+<var>${data}</var>
+<arg>${resp.json()}</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2025-09-15T11:18:59.998707" elapsed="0.000361"/>
+</kw>
+<kw name="Dictionary Should Contain Key" owner="Collections">
+<arg>${data}</arg>
+<arg>access</arg>
+<doc>Fails if ``key`` is not found from ``dictionary``.</doc>
+<status status="PASS" start="2025-09-15T11:18:59.999134" elapsed="0.000086"/>
+</kw>
+<kw name="Dictionary Should Contain Key" owner="Collections">
+<arg>${data}</arg>
+<arg>refresh</arg>
+<doc>Fails if ``key`` is not found from ``dictionary``.</doc>
+<status status="PASS" start="2025-09-15T11:18:59.999276" elapsed="0.000070"/>
+</kw>
+<return>
+<value>${data['access']}</value>
+<value>${data['refresh']}</value>
+<status status="PASS" start="2025-09-15T11:18:59.999377" elapsed="0.000034"/>
+</return>
+<msg time="2025-09-15T11:18:59.999837" level="INFO">${ACCESS} = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzU3OTMxNTM5LCJpYXQiOjE3NTc5Mjc5MzksImp0aSI6IjAyMWY3MGMwMDg4MjQ5NjQ5NmVjZWI5N2VkYTBhZGYxIiwidXNlcl9pZCI6IjEifQ.fSLd6WtkDVNw...</msg>
+<msg time="2025-09-15T11:18:59.999865" level="INFO">${REFRESH} = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc1ODAxNDMzOSwiaWF0IjoxNzU3OTI3OTM5LCJqdGkiOiI4ZDQ3ZGY2MGI3ZTc0OTVlYThmYjMzYmY2MjM1Nzg1YyIsInVzZXJfaWQiOiIxIn0.-iPOW7J_fX_...</msg>
+<var>${ACCESS}</var>
+<var>${REFRESH}</var>
+<doc>POST /api/token/ avec etienne/etienne. Retourne ${ACCESS} et ${REFRESH}.</doc>
+<status status="PASS" start="2025-09-15T11:18:59.889851" elapsed="0.110028"/>
+</kw>
+<kw name="Create Todo">
+<kw name="Auth Header">
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2025-09-15T11:19:00.000600" level="INFO">&amp;{hdr} = { Authorization=Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzU3OTMxNTM5LCJpYXQiOjE3NTc5Mjc5MzksImp0aSI6IjAyMWY3MGMwMDg4MjQ5NjQ5NmVjZWI5N2VkYTBhZGYxIiwidXNlcl9p...</msg>
+<var>&amp;{hdr}</var>
+<arg>Authorization=Bearer ${access}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.000455" elapsed="0.000162"/>
+</kw>
+<return>
+<value>${hdr}</value>
+<status status="PASS" start="2025-09-15T11:19:00.000646" elapsed="0.000018"/>
+</return>
+<msg time="2025-09-15T11:19:00.000729" level="INFO">${HDR} = {'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzU3OTMxNTM5LCJpYXQiOjE3NTc5Mjc5MzksImp0aSI6IjAyMWY3MGMwMDg4MjQ5NjQ5NmVjZWI5N2VkYTBhZGYxIiwidXNlc...</msg>
+<var>${HDR}</var>
+<arg>${access}</arg>
+<doc>Construit le header Authorization=Bearer &lt;token&gt;.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.000320" elapsed="0.000424"/>
+</kw>
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2025-09-15T11:19:00.000979" level="INFO">&amp;{payload} = { title=Todo depuis Robot | description=Première passe | inprogress=True | completed=False }</msg>
+<var>&amp;{payload}</var>
+<arg>title=${title}</arg>
+<arg>description=${description}</arg>
+<arg>inprogress=${inprogress}</arg>
+<arg>completed=${completed}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.000801" elapsed="0.000193"/>
+</kw>
+<kw name="POST On Session" owner="RequestsLibrary">
+<msg time="2025-09-15T11:19:00.006728" level="INFO">POST Request : url=http://localhost:8000/api/todos/ 
+ path_url=/api/todos/ 
+ headers={'User-Agent': 'python-requests/2.32.4', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzU3OTMxNTM5LCJpYXQiOjE3NTc5Mjc5MzksImp0aSI6IjAyMWY3MGMwMDg4MjQ5NjQ5NmVjZWI5N2VkYTBhZGYxIiwidXNlcl9pZCI6IjEifQ.fSLd6WtkDVNwSIsPs1JRiVupW7RH6bWf8w72931ZpN4', 'Content-Length': '112', 'Content-Type': 'application/json'} 
+ body=b'{"title": "Todo depuis Robot", "description": "Premi\\u00e8re passe", "inprogress": "True", "completed": "False"}' 
+ </msg>
+<msg time="2025-09-15T11:19:00.006793" level="INFO">POST Response : url=http://localhost:8000/api/todos/ 
+ status=201, reason=Created 
+ headers={'Date': 'Mon, 15 Sep 2025 09:19:00 GMT', 'Server': 'WSGIServer/0.2 CPython/3.13.6', 'Content-Type': 'application/json', 'Vary': 'Accept, origin', 'Allow': 'GET, POST, HEAD, OPTIONS', 'X-Frame-Options': 'DENY', 'Content-Length': '124', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'same-origin', 'Cross-Origin-Opener-Policy': 'same-origin'} 
+ body={"id":144,"title":"Todo depuis Robot","description":"Première passe","inprogress":true,"completed":false,"owner":"etienne"} 
+ </msg>
+<msg time="2025-09-15T11:19:00.006892" level="INFO">${resp} = &lt;Response [201]&gt;</msg>
+<var>${resp}</var>
+<arg>api</arg>
+<arg>${TODOS_PATH}</arg>
+<arg>json=${payload}</arg>
+<arg>headers=${HDR}</arg>
+<doc>Sends a POST request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.001052" elapsed="0.005857"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<msg time="2025-09-15T11:19:00.007368" level="INFO">Argument types are:
+&lt;class 'int'&gt;
+&lt;class 'str'&gt;</msg>
+<arg>${resp.status_code}</arg>
+<arg>201</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.007013" elapsed="0.000392"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2025-09-15T11:19:00.007801" level="INFO">${body} = {'id': 144, 'title': 'Todo depuis Robot', 'description': 'Première passe', 'inprogress': True, 'completed': False, 'owner': 'etienne'}</msg>
+<var>${body}</var>
+<arg>${resp.json()}</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.007476" elapsed="0.000342"/>
+</kw>
+<kw name="Dictionary Should Contain Key" owner="Collections">
+<arg>${body}</arg>
+<arg>id</arg>
+<doc>Fails if ``key`` is not found from ``dictionary``.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.007877" elapsed="0.000078"/>
+</kw>
+<return>
+<value>${body}</value>
+<status status="PASS" start="2025-09-15T11:19:00.007986" elapsed="0.000026"/>
+</return>
+<msg time="2025-09-15T11:19:00.008090" level="INFO">${todo} = {'id': 144, 'title': 'Todo depuis Robot', 'description': 'Première passe', 'inprogress': True, 'completed': False, 'owner': 'etienne'}</msg>
+<var>${todo}</var>
+<arg>${ACCESS}</arg>
+<arg>title=Todo depuis Robot</arg>
+<arg>description=Première passe</arg>
+<arg>inprogress=True</arg>
+<arg>completed=False</arg>
+<doc>Crée une todo appartenant à l'utilisateur connecté (owner auto via perform_create).</doc>
+<status status="PASS" start="2025-09-15T11:19:00.000035" elapsed="0.008069"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2025-09-15T11:19:00.008475" level="INFO">${todo_id} = 144</msg>
+<var>${todo_id}</var>
+<arg>${todo['id']}</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.008199" elapsed="0.000291"/>
+</kw>
+<kw name="Should Not Be Equal" owner="BuiltIn">
+<msg time="2025-09-15T11:19:00.008759" level="INFO">Argument types are:
+&lt;class 'int'&gt;
+&lt;class 'NoneType'&gt;</msg>
+<arg>${todo_id}</arg>
+<arg>${NONE}</arg>
+<doc>Fails if the given objects are equal.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.008665" elapsed="0.000126"/>
+</kw>
+<kw name="Get Todo">
+<kw name="Auth Header">
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2025-09-15T11:19:00.009382" level="INFO">&amp;{hdr} = { Authorization=Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzU3OTMxNTM5LCJpYXQiOjE3NTc5Mjc5MzksImp0aSI6IjAyMWY3MGMwMDg4MjQ5NjQ5NmVjZWI5N2VkYTBhZGYxIiwidXNlcl9p...</msg>
+<var>&amp;{hdr}</var>
+<arg>Authorization=Bearer ${access}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.009235" elapsed="0.000164"/>
+</kw>
+<return>
+<value>${hdr}</value>
+<status status="PASS" start="2025-09-15T11:19:00.009427" elapsed="0.000020"/>
+</return>
+<msg time="2025-09-15T11:19:00.009515" level="INFO">${HDR} = {'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzU3OTMxNTM5LCJpYXQiOjE3NTc5Mjc5MzksImp0aSI6IjAyMWY3MGMwMDg4MjQ5NjQ5NmVjZWI5N2VkYTBhZGYxIiwidXNlc...</msg>
+<var>${HDR}</var>
+<arg>${access}</arg>
+<doc>Construit le header Authorization=Bearer &lt;token&gt;.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.009106" elapsed="0.000424"/>
+</kw>
+<kw name="GET On Session" owner="RequestsLibrary">
+<msg time="2025-09-15T11:19:00.013962" level="INFO">GET Request : url=http://localhost:8000/api/todos/144/ 
+ path_url=/api/todos/144/ 
+ headers={'User-Agent': 'python-requests/2.32.4', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzU3OTMxNTM5LCJpYXQiOjE3NTc5Mjc5MzksImp0aSI6IjAyMWY3MGMwMDg4MjQ5NjQ5NmVjZWI5N2VkYTBhZGYxIiwidXNlcl9pZCI6IjEifQ.fSLd6WtkDVNwSIsPs1JRiVupW7RH6bWf8w72931ZpN4'} 
+ body=None 
+ </msg>
+<msg time="2025-09-15T11:19:00.014012" level="INFO">GET Response : url=http://localhost:8000/api/todos/144/ 
+ status=200, reason=OK 
+ headers={'Date': 'Mon, 15 Sep 2025 09:19:00 GMT', 'Server': 'WSGIServer/0.2 CPython/3.13.6', 'Content-Type': 'application/json', 'Vary': 'Accept, origin', 'Allow': 'GET, PUT, PATCH, DELETE, HEAD, OPTIONS', 'X-Frame-Options': 'DENY', 'Content-Length': '124', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'same-origin', 'Cross-Origin-Opener-Policy': 'same-origin'} 
+ body={"id":144,"title":"Todo depuis Robot","description":"Première passe","inprogress":true,"completed":false,"owner":"etienne"} 
+ </msg>
+<msg time="2025-09-15T11:19:00.014079" level="INFO">${resp} = &lt;Response [200]&gt;</msg>
+<var>${resp}</var>
+<arg>api</arg>
+<arg>${TODOS_PATH}${id}/</arg>
+<arg>headers=${HDR}</arg>
+<doc>Sends a GET request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.009586" elapsed="0.004509"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<msg time="2025-09-15T11:19:00.014470" level="INFO">Argument types are:
+&lt;class 'int'&gt;
+&lt;class 'str'&gt;</msg>
+<arg>${resp.status_code}</arg>
+<arg>200</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.014173" elapsed="0.000331"/>
+</kw>
+<return>
+<value>${resp.json()}</value>
+<status status="PASS" start="2025-09-15T11:19:00.014535" elapsed="0.000021"/>
+</return>
+<msg time="2025-09-15T11:19:00.014824" level="INFO">${t1} = {'id': 144, 'title': 'Todo depuis Robot', 'description': 'Première passe', 'inprogress': True, 'completed': False, 'owner': 'etienne'}</msg>
+<var>${t1}</var>
+<arg>${ACCESS}</arg>
+<arg>${todo_id}</arg>
+<doc>Récupère le détail d’une todo par id (200 attendu si elle appartient au token courant).</doc>
+<status status="PASS" start="2025-09-15T11:19:00.008921" elapsed="0.005919"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<arg>${t1['id']}</arg>
+<arg>${todo_id}</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.014930" elapsed="0.000346"/>
+</kw>
+<kw name="List Todos">
+<kw name="Auth Header">
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2025-09-15T11:19:00.016015" level="INFO">&amp;{hdr} = { Authorization=Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzU3OTMxNTM5LCJpYXQiOjE3NTc5Mjc5MzksImp0aSI6IjAyMWY3MGMwMDg4MjQ5NjQ5NmVjZWI5N2VkYTBhZGYxIiwidXNlcl9p...</msg>
+<var>&amp;{hdr}</var>
+<arg>Authorization=Bearer ${access}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.015850" elapsed="0.000184"/>
+</kw>
+<return>
+<value>${hdr}</value>
+<status status="PASS" start="2025-09-15T11:19:00.016120" elapsed="0.000030"/>
+</return>
+<msg time="2025-09-15T11:19:00.016253" level="INFO">${HDR} = {'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzU3OTMxNTM5LCJpYXQiOjE3NTc5Mjc5MzksImp0aSI6IjAyMWY3MGMwMDg4MjQ5NjQ5NmVjZWI5N2VkYTBhZGYxIiwidXNlc...</msg>
+<var>${HDR}</var>
+<arg>${access}</arg>
+<doc>Construit le header Authorization=Bearer &lt;token&gt;.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.015667" elapsed="0.000606"/>
+</kw>
+<kw name="GET On Session" owner="RequestsLibrary">
+<msg time="2025-09-15T11:19:00.026181" level="INFO">GET Request : url=http://localhost:8000/api/todos/ 
+ path_url=/api/todos/ 
+ headers={'User-Agent': 'python-requests/2.32.4', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzU3OTMxNTM5LCJpYXQiOjE3NTc5Mjc5MzksImp0aSI6IjAyMWY3MGMwMDg4MjQ5NjQ5NmVjZWI5N2VkYTBhZGYxIiwidXNlcl9pZCI6IjEifQ.fSLd6WtkDVNwSIsPs1JRiVupW7RH6bWf8w72931ZpN4'} 
+ body=None 
+ </msg>
+<msg time="2025-09-15T11:19:00.026249" level="INFO">GET Response : url=http://localhost:8000/api/todos/ 
+ status=200, reason=OK 
+ headers={'Date': 'Mon, 15 Sep 2025 09:19:00 GMT', 'Server': 'WSGIServer/0.2 CPython/3.13.6', 'Content-Type': 'application/json', 'Vary': 'Accept, origin', 'Allow': 'GET, POST, HEAD, OPTIONS', 'X-Frame-Options': 'DENY', 'Content-Length': '3570', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'same-origin', 'Cross-Origin-Opener-Policy': 'same-origin'} 
+ body=[{"id":144,"title":"Todo depuis Robot","description":"Première passe","inprogress":true,"completed":false,"owner":"etienne"},{"id":143,"title":"Done","description":"En cours","inprogress":false,"completed":true,"owner":"etienne"},{"id":142,"title":"Open item","description":"A faire","inprogress":false,"completed":false,"owner":"etienne"},{"id":141,"title":"Todo modifié par Robot","description":"Première passe","inprogress":false,"completed":true,"owner":"etienne"},{"id":29,"title":"Todo depuis Robot","description":"Première passe","inprogress":true,"completed":false,"owner":"etienne"},{"id":27,"title":"Todo modifié par Robot","description":"Première passe","inprogress":false,"completed":true,"owner":"etienne"},{"id":26,"title":"Todo depuis Robot","description":"Première passe","inprogress":true,"completed":false,"owner":"etienne"},{"id":25,"title":"Todo depuis Robot","description":"Première passe","inprogress":true,"completed":false,"owner":"etienne"},{"id":24,"title":"Todo depuis Robot","description":"Première passe","inprogress":true,"completed":false,"owner":"etienne"},{"id":23,"title":"Todo depuis Robot","description":"Première passe","inprogress":true,"completed":false,"owner":"etienne"},{"id":22,"title":"Todo depuis Robot","description":"Première passe","inprogress":true,"completed":false,"owner":"etienne"},{"id":21,"title":"Todo depuis Robot","description":"Première passe","inprogress":true,"completed":false,"owner":"etienne"},{"id":20,"title":"Todo depuis Robot","description":"Première passe","inprogress":true,"completed":false,"owner":"etienne"},{"id":19,"title":"Todo depuis Robot","description":"Première passe","inprogress":true,"completed":false,"owner":"etienne"},{"id":18,"title":"Todo depuis Robot","description":"Première passe","inprogress":true,"completed":false,"owner":"etienne"},{"id":17,"title":"Todo depuis Robot","description":"Première passe","inprogress":true,"completed":false,"owner":"etienne"},{"id":16,"title":"Todo depuis Robot","description":"Première passe","inprogress":true,"completed":false,"owner":"etienne"},{"id":15,"title":"Todo depuis Robot","description":"Première passe","inprogress":true,"completed":false,"owner":"etienne"},{"id":14,"title":"Todo depuis Robot","description":"Première passe","inprogress":true,"completed":false,"owner":"etienne"},{"id":12,"title":"Test","description":"Pytest, Jest, Postman","inprogress":false,"completed":false,"owner":"etienne"},{"id":10,"title":"Gestion des utilisateurs","description":"Inscription d’un utilisateur avec un email et un mot de passe, Connexion et déconnexion sécurisée, ⁠Interface utilisateur avec React et TypeScript, ⁠Un formulaire pour ajouter une tâche, Une liste dynamique des tâches avec possibilité de filtrer les tâches (par statut), ⁠Une gestion des erreurs et des notifications (\"Tâche ajoutée avec succès\"),","inprogress":true,"completed":false,"owner":"etienne"},{"id":9,"title":"Gestion des tâches","description":"Ajouter une tâche (titre et une description), Modifier une tâche, Supprimer une tâche, Marquer une tâche (EX : Statut : En cous ou terminé), Lister les tâches (avec un filtre pour afficher seulement les tâches terminées ou en cours)","inprogress":false,"completed":true,"owner":"etienne"},{"id":7,"title":"Base de données","description":"SQL Server","inprogress":true,"completed":false,"owner":"etienne"},{"id":6,"title":"⁠Backend","description":"Python,Architecture  API REST, Authentification JWT, ORM Django","inprogress":false,"completed":true,"owner":"etienne"}] 
+ </msg>
+<msg time="2025-09-15T11:19:00.026445" level="INFO">${resp} = &lt;Response [200]&gt;</msg>
+<var>${resp}</var>
+<arg>api</arg>
+<arg>${TODOS_PATH}</arg>
+<arg>headers=${HDR}</arg>
+<doc>Sends a GET request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.016346" elapsed="0.010115"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<msg time="2025-09-15T11:19:00.026889" level="INFO">Argument types are:
+&lt;class 'int'&gt;
+&lt;class 'str'&gt;</msg>
+<arg>${resp.status_code}</arg>
+<arg>200</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.026562" elapsed="0.000360"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2025-09-15T11:19:00.027345" level="INFO">${data} = [{'id': 144, 'title': 'Todo depuis Robot', 'description': 'Première passe', 'inprogress': True, 'completed': False, 'owner': 'etienne'}, {'id': 143, 'title': 'Done', 'description': 'En cours', 'inprog...</msg>
+<var>${data}</var>
+<arg>${resp.json()}</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.026987" elapsed="0.000375"/>
+</kw>
+<kw name="Run Keyword And Return Status" owner="BuiltIn">
+<kw name="Dictionary Should Contain Key" owner="Collections">
+<msg time="2025-09-15T11:19:00.027644" level="FAIL">TypeError: Expected argument 1 to be a dictionary, got list instead.</msg>
+<arg>${data}</arg>
+<arg>results</arg>
+<doc>Fails if ``key`` is not found from ``dictionary``.</doc>
+<status status="FAIL" start="2025-09-15T11:19:00.027506" elapsed="0.000244">TypeError: Expected argument 1 to be a dictionary, got list instead.</status>
+</kw>
+<msg time="2025-09-15T11:19:00.027808" level="INFO">${has_results} = False</msg>
+<var>${has_results}</var>
+<arg>Dictionary Should Contain Key</arg>
+<arg>${data}</arg>
+<arg>results</arg>
+<doc>Runs the given keyword with given arguments and returns the status as a Boolean value.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.027425" elapsed="0.000396"/>
+</kw>
+<if>
+<branch type="IF" condition="${has_results}">
+<kw name="Get From Dictionary" owner="Collections">
+<var>${results}</var>
+<arg>${data}</arg>
+<arg>results</arg>
+<doc>Returns a value from the given ``dictionary`` based on the given ``key``.</doc>
+<status status="NOT RUN" start="2025-09-15T11:19:00.027975" elapsed="0.000012"/>
+</kw>
+<return>
+<value>${results}</value>
+<status status="NOT RUN" start="2025-09-15T11:19:00.028015" elapsed="0.000010"/>
+</return>
+<status status="NOT RUN" start="2025-09-15T11:19:00.027890" elapsed="0.000151"/>
+</branch>
+<branch type="ELSE">
+<return>
+<value>${data}</value>
+<status status="PASS" start="2025-09-15T11:19:00.028079" elapsed="0.000016"/>
+</return>
+<status status="PASS" start="2025-09-15T11:19:00.028057" elapsed="0.000055"/>
+</branch>
+<status status="PASS" start="2025-09-15T11:19:00.027865" elapsed="0.000260"/>
+</if>
+<msg time="2025-09-15T11:19:00.028239" level="INFO">${all} = [{'id': 144, 'title': 'Todo depuis Robot', 'description': 'Première passe', 'inprogress': True, 'completed': False, 'owner': 'etienne'}, {'id': 143, 'title': 'Done', 'description': 'En cours', 'inprog...</msg>
+<var>${all}</var>
+<arg>${ACCESS}</arg>
+<doc>Liste les todos de l’utilisateur (gère éventuellement la pagination DRF: results[]).</doc>
+<status status="PASS" start="2025-09-15T11:19:00.015481" elapsed="0.012773"/>
+</kw>
+<kw name="Get Length" owner="BuiltIn">
+<msg time="2025-09-15T11:19:00.028404" level="INFO">Length is 24.</msg>
+<msg time="2025-09-15T11:19:00.028442" level="INFO">${count} = 24</msg>
+<var>${count}</var>
+<arg>${all}</arg>
+<doc>Returns and logs the length of the given item as an integer.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.028343" elapsed="0.000111"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${count} &gt;= 1</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.028520" elapsed="0.000132"/>
+</kw>
+<kw name="Update Todo">
+<kw name="Auth Header">
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2025-09-15T11:19:00.029303" level="INFO">&amp;{hdr} = { Authorization=Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzU3OTMxNTM5LCJpYXQiOjE3NTc5Mjc5MzksImp0aSI6IjAyMWY3MGMwMDg4MjQ5NjQ5NmVjZWI5N2VkYTBhZGYxIiwidXNlcl9p...</msg>
+<var>&amp;{hdr}</var>
+<arg>Authorization=Bearer ${access}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.029172" elapsed="0.000148"/>
+</kw>
+<return>
+<value>${hdr}</value>
+<status status="PASS" start="2025-09-15T11:19:00.029345" elapsed="0.000016"/>
+</return>
+<msg time="2025-09-15T11:19:00.029424" level="INFO">${HDR} = {'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzU3OTMxNTM5LCJpYXQiOjE3NTc5Mjc5MzksImp0aSI6IjAyMWY3MGMwMDg4MjQ5NjQ5NmVjZWI5N2VkYTBhZGYxIiwidXNlc...</msg>
+<var>${HDR}</var>
+<arg>${access}</arg>
+<doc>Construit le header Authorization=Bearer &lt;token&gt;.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.029037" elapsed="0.000400"/>
+</kw>
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2025-09-15T11:19:00.029654" level="INFO">&amp;{payload} = { title=Todo modifié par Robot | inprogress=False | completed=True }</msg>
+<var>&amp;{payload}</var>
+<arg>title=${new_title}</arg>
+<arg>inprogress=${inprogress}</arg>
+<arg>completed=${completed}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.029492" elapsed="0.000178"/>
+</kw>
+<kw name="PATCH On Session" owner="RequestsLibrary">
+<msg time="2025-09-15T11:19:00.035561" level="INFO">PATCH Request : url=http://localhost:8000/api/todos/144/ 
+ path_url=/api/todos/144/ 
+ headers={'User-Agent': 'python-requests/2.32.4', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzU3OTMxNTM5LCJpYXQiOjE3NTc5Mjc5MzksImp0aSI6IjAyMWY3MGMwMDg4MjQ5NjQ5NmVjZWI5N2VkYTBhZGYxIiwidXNlcl9pZCI6IjEifQ.fSLd6WtkDVNwSIsPs1JRiVupW7RH6bWf8w72931ZpN4', 'Content-Length': '84', 'Content-Type': 'application/json'} 
+ body=b'{"title": "Todo modifi\\u00e9 par Robot", "inprogress": "False", "completed": "True"}' 
+ </msg>
+<msg time="2025-09-15T11:19:00.035624" level="INFO">PATCH Response : url=http://localhost:8000/api/todos/144/ 
+ status=200, reason=OK 
+ headers={'Date': 'Mon, 15 Sep 2025 09:19:00 GMT', 'Server': 'WSGIServer/0.2 CPython/3.13.6', 'Content-Type': 'application/json', 'Vary': 'Accept, origin', 'Allow': 'GET, PUT, PATCH, DELETE, HEAD, OPTIONS', 'X-Frame-Options': 'DENY', 'Content-Length': '130', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'same-origin', 'Cross-Origin-Opener-Policy': 'same-origin'} 
+ body={"id":144,"title":"Todo modifié par Robot","description":"Première passe","inprogress":false,"completed":true,"owner":"etienne"} 
+ </msg>
+<msg time="2025-09-15T11:19:00.035709" level="INFO">${resp} = &lt;Response [200]&gt;</msg>
+<var>${resp}</var>
+<arg>api</arg>
+<arg>${TODOS_PATH}${id}/</arg>
+<arg>json=${payload}</arg>
+<arg>headers=${HDR}</arg>
+<doc>Sends a PATCH request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.029727" elapsed="0.005997"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<msg time="2025-09-15T11:19:00.036177" level="INFO">Argument types are:
+&lt;class 'int'&gt;
+&lt;class 'str'&gt;</msg>
+<arg>${resp.status_code}</arg>
+<arg>200</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.035835" elapsed="0.000377"/>
+</kw>
+<return>
+<value>${resp.json()}</value>
+<status status="PASS" start="2025-09-15T11:19:00.036244" elapsed="0.000026"/>
+</return>
+<msg time="2025-09-15T11:19:00.036563" level="INFO">${t2} = {'id': 144, 'title': 'Todo modifié par Robot', 'description': 'Première passe', 'inprogress': False, 'completed': True, 'owner': 'etienne'}</msg>
+<var>${t2}</var>
+<arg>${ACCESS}</arg>
+<arg>${todo_id}</arg>
+<arg>new_title=Todo modifié par Robot</arg>
+<arg>inprogress=False</arg>
+<arg>completed=True</arg>
+<doc>Met à jour partiellement une todo (PATCH). Respecte la validation (pas inprogress &amp; completed à True).</doc>
+<status status="PASS" start="2025-09-15T11:19:00.028791" elapsed="0.007788"/>
+</kw>
+<kw name="Should Be Equal As Strings" owner="BuiltIn">
+<arg>${t2['title']}</arg>
+<arg>Todo modifié par Robot</arg>
+<doc>Fails if objects are unequal after converting them to strings.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.036784" elapsed="0.000287"/>
+</kw>
+<kw name="Should Be Equal As Strings" owner="BuiltIn">
+<msg time="2025-09-15T11:19:00.037380" level="INFO">Argument types are:
+&lt;class 'bool'&gt;
+&lt;class 'str'&gt;</msg>
+<arg>${t2['completed']}</arg>
+<arg>True</arg>
+<doc>Fails if objects are unequal after converting them to strings.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.037146" elapsed="0.000263"/>
+</kw>
+<kw name="Should Be Equal As Strings" owner="BuiltIn">
+<msg time="2025-09-15T11:19:00.037704" level="INFO">Argument types are:
+&lt;class 'bool'&gt;
+&lt;class 'str'&gt;</msg>
+<arg>${t2['inprogress']}</arg>
+<arg>False</arg>
+<doc>Fails if objects are unequal after converting them to strings.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.037476" elapsed="0.000254"/>
+</kw>
+<kw name="Delete Todo">
+<kw name="Auth Header">
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2025-09-15T11:19:00.038306" level="INFO">&amp;{hdr} = { Authorization=Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzU3OTMxNTM5LCJpYXQiOjE3NTc5Mjc5MzksImp0aSI6IjAyMWY3MGMwMDg4MjQ5NjQ5NmVjZWI5N2VkYTBhZGYxIiwidXNlcl9p...</msg>
+<var>&amp;{hdr}</var>
+<arg>Authorization=Bearer ${access}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.038167" elapsed="0.000156"/>
+</kw>
+<return>
+<value>${hdr}</value>
+<status status="PASS" start="2025-09-15T11:19:00.038350" elapsed="0.000018"/>
+</return>
+<msg time="2025-09-15T11:19:00.038428" level="INFO">${HDR} = {'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzU3OTMxNTM5LCJpYXQiOjE3NTc5Mjc5MzksImp0aSI6IjAyMWY3MGMwMDg4MjQ5NjQ5NmVjZWI5N2VkYTBhZGYxIiwidXNlc...</msg>
+<var>${HDR}</var>
+<arg>${access}</arg>
+<doc>Construit le header Authorization=Bearer &lt;token&gt;.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.038039" elapsed="0.000402"/>
+</kw>
+<kw name="DELETE On Session" owner="RequestsLibrary">
+<msg time="2025-09-15T11:19:00.042469" level="INFO">DELETE Request : url=http://localhost:8000/api/todos/144/ 
+ path_url=/api/todos/144/ 
+ headers={'User-Agent': 'python-requests/2.32.4', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzU3OTMxNTM5LCJpYXQiOjE3NTc5Mjc5MzksImp0aSI6IjAyMWY3MGMwMDg4MjQ5NjQ5NmVjZWI5N2VkYTBhZGYxIiwidXNlcl9pZCI6IjEifQ.fSLd6WtkDVNwSIsPs1JRiVupW7RH6bWf8w72931ZpN4', 'Content-Length': '0'} 
+ body=None 
+ </msg>
+<msg time="2025-09-15T11:19:00.042515" level="INFO">DELETE Response : url=http://localhost:8000/api/todos/144/ 
+ status=204, reason=No Content 
+ headers={'Date': 'Mon, 15 Sep 2025 09:19:00 GMT', 'Server': 'WSGIServer/0.2 CPython/3.13.6', 'Vary': 'Accept, origin', 'Allow': 'GET, PUT, PATCH, DELETE, HEAD, OPTIONS', 'X-Frame-Options': 'DENY', 'Content-Length': '0', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'same-origin', 'Cross-Origin-Opener-Policy': 'same-origin'} 
+ body=None 
+ </msg>
+<msg time="2025-09-15T11:19:00.042584" level="INFO">${resp} = &lt;Response [204]&gt;</msg>
+<var>${resp}</var>
+<arg>api</arg>
+<arg>${TODOS_PATH}${id}/</arg>
+<arg>headers=${HDR}</arg>
+<doc>Sends a DELETE request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.038493" elapsed="0.004106"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<msg time="2025-09-15T11:19:00.042999" level="INFO">Argument types are:
+&lt;class 'int'&gt;
+&lt;class 'str'&gt;</msg>
+<arg>${resp.status_code}</arg>
+<arg>204</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.042686" elapsed="0.000347"/>
+</kw>
+<arg>${ACCESS}</arg>
+<arg>${todo_id}</arg>
+<doc>Supprime une todo (204 attendu). Un GET ensuite renverra 404.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.037848" elapsed="0.005223"/>
+</kw>
+<kw name="Auth Header">
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2025-09-15T11:19:00.043489" level="INFO">&amp;{hdr} = { Authorization=Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzU3OTMxNTM5LCJpYXQiOjE3NTc5Mjc5MzksImp0aSI6IjAyMWY3MGMwMDg4MjQ5NjQ5NmVjZWI5N2VkYTBhZGYxIiwidXNlcl9p...</msg>
+<var>&amp;{hdr}</var>
+<arg>Authorization=Bearer ${access}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.043351" elapsed="0.000154"/>
+</kw>
+<return>
+<value>${hdr}</value>
+<status status="PASS" start="2025-09-15T11:19:00.043534" elapsed="0.000022"/>
+</return>
+<msg time="2025-09-15T11:19:00.043623" level="INFO">${HDR} = {'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzU3OTMxNTM5LCJpYXQiOjE3NTc5Mjc5MzksImp0aSI6IjAyMWY3MGMwMDg4MjQ5NjQ5NmVjZWI5N2VkYTBhZGYxIiwidXNlc...</msg>
+<var>${HDR}</var>
+<arg>${ACCESS}</arg>
+<doc>Construit le header Authorization=Bearer &lt;token&gt;.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.043192" elapsed="0.000444"/>
+</kw>
+<kw name="GET On Session" owner="RequestsLibrary">
+<msg time="2025-09-15T11:19:00.046626" level="INFO">GET Request : url=http://localhost:8000/api/todos/144/ 
+ path_url=/api/todos/144/ 
+ headers={'User-Agent': 'python-requests/2.32.4', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzU3OTMxNTM5LCJpYXQiOjE3NTc5Mjc5MzksImp0aSI6IjAyMWY3MGMwMDg4MjQ5NjQ5NmVjZWI5N2VkYTBhZGYxIiwidXNlcl9pZCI6IjEifQ.fSLd6WtkDVNwSIsPs1JRiVupW7RH6bWf8w72931ZpN4'} 
+ body=None 
+ </msg>
+<msg time="2025-09-15T11:19:00.046670" level="INFO">GET Response : url=http://localhost:8000/api/todos/144/ 
+ status=404, reason=Not Found 
+ headers={'Date': 'Mon, 15 Sep 2025 09:19:00 GMT', 'Server': 'WSGIServer/0.2 CPython/3.13.6', 'Content-Type': 'application/json', 'Vary': 'Accept, origin', 'Allow': 'GET, PUT, PATCH, DELETE, HEAD, OPTIONS', 'X-Frame-Options': 'DENY', 'Content-Length': '45', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'same-origin', 'Cross-Origin-Opener-Policy': 'same-origin'} 
+ body={"detail":"No Todo matches the given query."} 
+ </msg>
+<msg time="2025-09-15T11:19:00.046735" level="INFO">${resp404} = &lt;Response [404]&gt;</msg>
+<var>${resp404}</var>
+<arg>api</arg>
+<arg>${TODOS_PATH}${todo_id}/</arg>
+<arg>headers=${HDR}</arg>
+<arg>expected_status=any</arg>
+<doc>Sends a GET request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.043709" elapsed="0.003042"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<msg time="2025-09-15T11:19:00.047141" level="INFO">Argument types are:
+&lt;class 'int'&gt;
+&lt;class 'str'&gt;</msg>
+<arg>${resp404.status_code}</arg>
+<arg>404</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="PASS" start="2025-09-15T11:19:00.046848" elapsed="0.000325"/>
+</kw>
+<doc>Crée → lit → liste → met à jour → supprime une todo, puis vérifie le 404 post-suppression.</doc>
+<status status="PASS" start="2025-09-15T11:18:59.888830" elapsed="0.158447"/>
+</test>
+<status status="PASS" start="2025-09-15T11:18:59.615285" elapsed="0.432660"/>
+</suite>
+<statistics>
+<total>
+<stat pass="2" fail="0" skip="0">All Tests</stat>
+</total>
+<tag>
+</tag>
+<suite>
+<stat name="Todos" id="s1" pass="2" fail="0" skip="0">Todos</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>

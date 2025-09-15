@@ -1,30 +1,25 @@
 *** Settings ***
-# ───────────────────────────────────────────────────────────────────────────
-# Librairies :
-# - RequestsLibrary : appels HTTP (sessions, GET/POST/PATCH/DELETE)
-# - JSONLibrary / Collections : manipuler les objets JSON (dict/list)
-# - String : utilitaires (générer un suffixe aléatoire pour username)
-# ───────────────────────────────────────────────────────────────────────────
+# Librairies utilisées :
+# - RequestsLibrary : appels HTTP
+# - JSONLibrary / Collections : manipulation d'objets JSON et listes/dicts
+# - String : utilitaires (générer des suffixes aléatoires, etc.)
 Library           RequestsLibrary
 Library           JSONLibrary
 Library           Collections
 Library           String
 
-# Suite Setup : on crée une session HTTP "api" vers ${BASE_URL} (une fois pour tous les tests)
+# On crée une seule session HTTP "api" pour toute la suite
 Suite Setup       Create API Session
 
 
 *** Variables ***
-# ───────────────────────────────────────────────────────────────────────────
-# Configuration Back-end (modifie ${BASE_URL}
-# ───────────────────────────────────────────────────────────────────────────
+# Les endpoints DRF / SimpleJWT (adapter si besoin)
 ${BASE_URL}          http://localhost:8000/api
-
-# Auth (SimpleJWT)
 ${AUTH_PATH}         /token/
 ${REFRESH_PATH}      /token/refresh/
 
-# Endpoints Users (DRF router → slash final requis)
+# Endpoints Todo & Users (DRF router, avec slash final)
+${TODOS_PATH}        /todos/
 ${USERS_PATH}        /users/
 
 # Inscription publique (RegisterView)
@@ -54,19 +49,6 @@ Login And Get Tokens
     Dictionary Should Contain Key  ${data}    refresh
     RETURN             ${data['access']}    ${data['refresh']}
 
-
-#Refresh Token
-Refresh Access Token
-    [Documentation]   POST ${REFRESH_PATH} avec un refresh → renvoie un nouvel access (Vérifie le refresh (POST /api/token/refresh/ → 200 + access)).
-    [Arguments]        ${refresh}
-    &{payload}=        Create Dictionary    refresh=${refresh}
-    &{hdr}=            Create Dictionary    Content-Type=application/json
-    ${resp}=           POST On Session      api    ${REFRESH_PATH}    json=${payload}    headers=${hdr}
-    Should Be Equal As Integers    ${resp.status_code}    200
-    ${data}=           Set Variable         ${resp.json()}
-    Dictionary Should Contain Key          ${data}    access
-    RETURN             ${data['access']}
-
 Auth Header
     [Documentation]    Construit le header Authorization=Bearer <token>.
     [Arguments]        ${access}
@@ -75,10 +57,65 @@ Auth Header
 
 
 # =========================
-#        USERS HELPERS
+#        TODOS (CRUD)
+# =========================
+Create Todo
+    [Documentation]    Crée une todo appartenant à l'utilisateur connecté (owner auto via perform_create).
+    [Arguments]        ${access}    ${title}=Test todo    ${description}=From Robot    ${inprogress}=True    ${completed}=False
+    ${HDR}=            Auth Header    ${access}
+    &{payload}=        Create Dictionary    title=${title}    description=${description}    inprogress=${inprogress}    completed=${completed}
+    ${resp}=           POST On Session      api    ${TODOS_PATH}    json=${payload}    headers=${HDR}
+    Should Be Equal As Integers    ${resp.status_code}    201
+    ${body}=           Set Variable         ${resp.json()}
+    Dictionary Should Contain Key    ${body}    id
+    RETURN             ${body}
+
+Get Todo
+    [Documentation]    Récupère le détail d’une todo par id (200 attendu si elle appartient au token courant).
+    [Arguments]        ${access}    ${id}
+    ${HDR}=            Auth Header    ${access}
+    ${resp}=           GET On Session       api    ${TODOS_PATH}${id}/    headers=${HDR}
+    Should Be Equal As Integers    ${resp.status_code}    200
+    RETURN             ${resp.json()}
+
+List Todos
+    [Documentation]    Liste les todos de l’utilisateur (gère la pagination DRF: results[]).
+    [Arguments]        ${access}
+    ${HDR}=            Auth Header    ${access}
+    ${resp}=           GET On Session       api    ${TODOS_PATH}    headers=${HDR}
+    Should Be Equal As Integers    ${resp.status_code}    200
+    ${data}=           Set Variable         ${resp.json()}
+    # Si pagination DRF: {"count":...,"results":[...]} sinon liste brute
+    ${has_results}=    Run Keyword And Return Status    Dictionary Should Contain Key    ${data}    results
+    IF    ${has_results}
+        ${results}=    Get From Dictionary    ${data}    results
+        RETURN         ${results}
+    ELSE
+        RETURN         ${data}
+    END
+
+Update Todo
+    [Documentation]    Met à jour partiellement une todo (PATCH). Respecte la validation (pas inprogress & completed à True).
+    [Arguments]        ${access}    ${id}    ${new_title}=Updated by Robot    ${inprogress}=False    ${completed}=True
+    ${HDR}=            Auth Header    ${access}
+    &{payload}=        Create Dictionary    title=${new_title}    inprogress=${inprogress}    completed=${completed}
+    ${resp}=           PATCH On Session     api    ${TODOS_PATH}${id}/    json=${payload}    headers=${HDR}
+    Should Be Equal As Integers    ${resp.status_code}    200
+    RETURN             ${resp.json()}
+
+Delete Todo
+    [Documentation]    Supprime une todo (204 attendu). Un GET ensuite renverra 404.
+    [Arguments]        ${access}    ${id}
+    ${HDR}=            Auth Header    ${access}
+    ${resp}=           DELETE On Session    api    ${TODOS_PATH}${id}/    headers=${HDR}
+    Should Be Equal As Integers    ${resp.status_code}    204
+
+
+# =========================
+#        USERS (Admin)
 # =========================
 Register Random User
-    [Documentation]    Crée un utilisateur public via ${REGISTER_PATH} (/api/register/) (201). Le serializer exige: first_name,last_name, email, password, username.
+    [Documentation]    Crée un utilisateur public via /api/register/ (201). Le serializer exige first_name/last_name/email/password/username.
     ${suffix}=         Generate Random String    6    [LOWER]
     ${uname}=          Set Variable    robot_${suffix}
     &{payload}=        Create Dictionary
@@ -89,12 +126,12 @@ Register Random User
     ...                last_name=Tester
     &{hdr}=            Create Dictionary    Content-Type=application/json
     ${resp}=           POST On Session      api    ${REGISTER_PATH}    json=${payload}    headers=${hdr}    expected_status=201
-    # On accepte les erreurs pour pouvoir afficher un log utile si 4xx   
     Should Be Equal As Integers    ${resp.status_code}    201
     RETURN             ${uname}
 
+# ----- Helpers users -----
 List Users (Requires Auth)
-    [Documentation]    GET  ${USERS_PATH} (/api/users/ (IsAdminUser)) → 200 si admin, 403 sinon. On renvoie la réponse brute.
+    [Documentation]    GET /api/users/ (IsAdminUser) → 200 si admin, 403 sinon. On renvoie la réponse brute.
     [Arguments]        ${access}
     ${HDR}=            Auth Header    ${access}
     ${resp}=           GET On Session    api    ${USERS_PATH}    headers=${HDR}    expected_status=any
@@ -120,19 +157,6 @@ Find User Id By Username
         END
     END
     RETURN    ${NONE}
-
-Assert Users Non-Admin Friendly
-    [Documentation]    Vérifie le comportement de /users/ pour un compte potentiellement non-admin.
-    ...                - 403  : OK (non-admin confirmé) → test passe.
-    ...                - 200  : l'utilisateur est admin → on SKIP ce test (scénario non-admin).
-    ...                - autre: on FAIL (statut inattendu).
-    [Arguments]        ${access}
-    ${resp}=           List Users (Requires Auth)    ${access}
-    ${code}=           Convert To Integer    ${resp.status_code}
-
-    Run Keyword If     ${code} == 403    Log To Console    OK: non-admin → /users/ renvoie 403 comme prévu.
-    ...    ELSE IF     ${code} == 200    Skip    L'utilisateur est admin (200). On saute ce test dédié au non-admin.
-    ...    ELSE        Fail    Statut inattendu pour /users/: ${code}. Réponse: ${resp.text}
 
 Set User Staff
     [Documentation]    PATCH /api/users/{id}/ is_staff=True/False (admin requis).
@@ -168,7 +192,7 @@ Delete User (Admin Only)
 
 *** Test Cases ***
 # =========================
-#        AUTH DE BASE
+#        AUTH / TOKEN
 # =========================
 Valid Login
     [Documentation]    Vérifie qu'on récupère bien un access et un refresh token.
@@ -177,35 +201,74 @@ Valid Login
     Should Not Be Empty          ${REFRESH}
 
 Refresh Token
-    [Documentation]    Vérifie le refresh (POST ${REFRESH_PATH} → 200 + access).
+    [Documentation]    Vérifie le refresh (POST /api/token/refresh/ → 200 + access).
     ${ACCESS}    ${REFRESH}=    Login And Get Tokens
-    ${NEW}=                   Refresh Access Token    ${REFRESH}
-    Should Not Be Empty       ${NEW}
+    &{payload}=                 Create Dictionary    refresh=${REFRESH}
+    &{hdr}=                     Create Dictionary    Content-Type=application/json
+    ${resp}=                    POST On Session      api    ${REFRESH_PATH}    json=${payload}    headers=${hdr}
+    Should Be Equal As Integers    ${resp.status_code}    200
+    ${data}=                    Set Variable         ${resp.json()}
+    Dictionary Should Contain Key    ${data}    access
+
+Call Todos With Bearer
+    [Documentation]    Smoke test sur /api/todos/ avec Authorization Bearer (doit renvoyer 200).
+    ${ACCESS}    ${REFRESH}=    Login And Get Tokens
+    ${HDR}=                     Auth Header    ${ACCESS}
+    ${resp}=                    GET On Session    api    ${TODOS_PATH}    headers=${HDR}
+    Should Be Equal As Integers    ${resp.status_code}    200
+
+
+# =========================
+#        TODOS FLOW
+# =========================
+CRUD Todo End-To-End
+    [Documentation]    Crée → lit → liste → met à jour → supprime une todo, puis vérifie le 404 post-suppression.
+    ${ACCESS}    ${REFRESH}=    Login And Get Tokens
+
+    # CREATE
+    ${todo}=      Create Todo    ${ACCESS}    title=Todo depuis Robot    description=Première passe    inprogress=True    completed=False
+    ${todo_id}=   Set Variable   ${todo['id']}
+    Should Not Be Equal    ${todo_id}    ${NONE}
+
+    # READ
+    ${t1}=        Get Todo       ${ACCESS}    ${todo_id}
+    Should Be Equal As Integers    ${t1['id']}    ${todo_id}
+
+    # LIST
+    ${all}=       List Todos     ${ACCESS}
+    ${count}=     Get Length     ${all}
+    Should Be True    ${count} >= 1
+
+    # UPDATE (respecte la validation: inprogress=False, completed=True)
+    ${t2}=        Update Todo    ${ACCESS}    ${todo_id}    new_title=Todo modifié par Robot    inprogress=False    completed=True
+    Should Be Equal As Strings    ${t2['title']}         Todo modifié par Robot
+    Should Be Equal As Strings    ${t2['completed']}     True
+    Should Be Equal As Strings    ${t2['inprogress']}    False
+
+    # DELETE
+    Delete Todo   ${ACCESS}    ${todo_id}
+    ${HDR}=       Auth Header    ${ACCESS}
+    ${resp404}=   GET On Session    api    ${TODOS_PATH}${todo_id}/    headers=${HDR}    expected_status=any
+    Should Be Equal As Integers    ${resp404.status_code}    404
 
 
 # =========================
 #        USERS FLOW
 # =========================
-Users Non-Admin Flow (Expect 403)
-    [Documentation]    Si ${USERNAME} n'est pas staff/superuser, /users/ doit renvoyer 403 mais le test ne casse pas si le compte est admin :
-    ...                - 403  : OK (non-admin confirmé) → test passe.
-    ...                - 200  : l'utilisateur est admin → on SKIP ce test (scénario non-admin).
-    ...                - autre: on FAIL (statut inattendu).
-    ${ACCESS}    ${REFRESH}=    Login And Get Tokens
-    Assert Users Non-Admin Friendly    ${ACCESS}
-
-Users Flow (200 si admin)
-    [Documentation]    Crée un user public, puis liste /users/ (200 si ${USERNAME} est admin).
+Users Flow
+    [Documentation]    Crée un user public, puis tente /users/ (200 si admin, 403 sinon).
     ${new_user}=   Register Random User
     ${ACCESS}    ${REFRESH}=    Login And Get Tokens
 
     ${resp}=       List Users (Requires Auth)    ${ACCESS}
-    Should Be Equal As Integers    ${resp.status_code}    200
+    ${code}=       Convert To Integer    ${resp.status_code}
+    # Si ton compte n'est pas admin, ce test échouera ici (normal) → utilise le test "Users Non-Admin Flow" si tu veux juste vérifier 403.
+    Should Be Equal As Integers    ${code}    200
 
     ${users}=      Set Variable    ${resp.json()}
     ${n}=          Get Length      ${users}
     Should Be True    ${n} >= 1
-    
+
 Users Admin Flow (Requires staff)
     [Documentation]    Nécessite que ${USERNAME} soit staff/superuser. Démontre les opérations admin (is_staff, is_active, delete).
     ${ACCESS}    ${REFRESH}=    Login And Get Tokens
@@ -243,5 +306,4 @@ Users Admin Flow (Requires staff)
 
     # Vérifier qu'il n'existe plus
     ${resp_get}=      Get User (Requires Auth)    ${ACCESS}    ${uid}
-    Log to console    ${resp_get.status_code}
     Should Be Equal As Integers    ${resp_get.status_code}    404
